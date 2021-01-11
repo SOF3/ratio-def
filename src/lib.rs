@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! units {
-    ( #[derive($($derives:path),* $(,)?)]$base:ty:
+    ( #[$derive:meta] $base:ty:
       $(
           $(#[$meta:meta])*
           $tys:ident;
@@ -11,7 +11,7 @@ macro_rules! units {
     ) => {
         $(
             $(#[$meta])*
-            #[derive($($derives),*)]
+            #[$derive]
             pub struct $tys(pub $base);
 
             impl From<$base> for $tys {
@@ -119,7 +119,7 @@ macro_rules! units {
 #[cfg(test)]
 mod tests {
     units! {
-        #[derive(Debug, Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord)] f64:
+        #[derive(Debug, Clone, Copy, Default, PartialEq, PartialOrd)] f64:
         Accel; Veloc; Length; Time; Mass; Force; Energy;
 
         <Accel> * <Time> = Veloc;
