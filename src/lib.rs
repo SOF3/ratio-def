@@ -10,8 +10,8 @@ macro_rules! units {
       )*
     ) => {
         $(
-            // $(#[$meta])*
-            // #[derive($($derives),*)]
+            $(#[$meta])*
+            #[derive($($derives),*)]
             pub struct $tys(pub $base);
 
             impl From<$base> for $tys {
