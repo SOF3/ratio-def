@@ -1,14 +1,22 @@
 #[macro_export]
 macro_rules! units {
-    ( #[$derive:meta] $base:ty, $blanket:path:
-      $(
-          $(#[$meta:meta])*
-          $tys:ident;
-      )*
-      $(
-          <$a:path> * <$b:path> = $c:path;
-      )*
+    (
+        $(#[$blanket_meta:meta])*
+        $blanket:ident($($super:tt)*);
+        #[$derive:meta] $base:ty:
+        $(
+            $(#[$meta:meta])*
+            $tys:ident;
+        )*
+        $(
+            <$a:path> * <$b:path> = $c:path;
+        )*
     ) => {
+        pub trait $blanket : $($super)* {
+            /// Returns the raw value of this struct.
+            fn value(self) -> $base;
+        }
+
         $(
             $(#[$meta])*
             #[$derive]
@@ -21,12 +29,17 @@ macro_rules! units {
                 }
             }
 
-            impl $blanket for $tys {}
-
             impl $tys {
                 /// Returns the raw value of this struct.
                 #[inline(always)]
                 pub fn value(self) -> $base {
+                    self.0
+                }
+            }
+
+            impl $blanket for $tys {
+                #[inline(always)]
+                fn value(self) -> $base {
                     self.0
                 }
             }
@@ -129,10 +142,10 @@ macro_rules! units {
 
 #[cfg(test)]
 mod tests {
-    trait Blanket: std::fmt::Debug + Clone + Copy + Default + PartialEq + PartialOrd {}
-
     units! {
-        #[derive(Debug, Clone, Copy, Default, PartialEq, PartialOrd)] f64, Blanket:
+        Blanket(std::fmt::Debug + Clone + Copy + Default + PartialEq + PartialOrd);
+
+        #[derive(Debug, Clone, Copy, Default, PartialEq, PartialOrd)] f64:
         Accel; Veloc; Length; Time; Mass; Force; Energy;
 
         <Accel> * <Time> = Veloc;
