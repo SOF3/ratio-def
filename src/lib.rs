@@ -1,6 +1,6 @@
 #[macro_export]
 macro_rules! units {
-    ( #[$derive:meta] $base:ty:
+    ( #[$derive:meta] $base:ty, $blanket:path:
       $(
           $(#[$meta:meta])*
           $tys:ident;
@@ -20,6 +20,8 @@ macro_rules! units {
                     Self(base)
                 }
             }
+
+            impl $blanket for $tys {}
 
             impl $tys {
                 /// Returns the raw value of this struct.
@@ -127,8 +129,10 @@ macro_rules! units {
 
 #[cfg(test)]
 mod tests {
+    trait Blanket: std::fmt::Debug + Clone + Copy + Default + PartialEq + PartialOrd {}
+
     units! {
-        #[derive(Debug, Clone, Copy, Default, PartialEq, PartialOrd)] f64:
+        #[derive(Debug, Clone, Copy, Default, PartialEq, PartialOrd)] f64, Blanket:
         Accel; Veloc; Length; Time; Mass; Force; Energy;
 
         <Accel> * <Time> = Veloc;
