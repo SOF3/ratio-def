@@ -61,6 +61,15 @@ macro_rules! units {
                 }
             }
 
+            impl ::std::ops::Mul<$base> for $tys {
+                type Output = Self;
+
+                #[inline(always)]
+                fn mul(self, other: $base) -> Self {
+                    Self(self.0 * other)
+                }
+            }
+
             impl ::std::ops::MulAssign<$base> for $tys {
                 #[inline(always)]
                 fn mul_assign(&mut self, other: $base) {
