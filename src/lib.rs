@@ -12,6 +12,7 @@ macro_rules! units {
             <$a:path> * <$b:path> = $c:path;
         )*
     ) => {
+        $(#[$blanket_meta])*
         pub trait $blanket : $($super)* {
             /// Returns the raw value of this struct.
             fn value(self) -> $base;
